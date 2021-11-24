@@ -1,0 +1,322 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema mydbiren
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema mydbiren
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `mydbiren` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci ;
+-- -----------------------------------------------------
+-- -----------------------------------------------------
+-- Table `mydbiren`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`users` (
+  `usCode` VARCHAR(70) NOT NULL,
+  `usNickname` VARCHAR(45) NOT NULL,
+  `usPassword` VARCHAR(450) NOT NULL,
+  `usState` VARCHAR(70) NOT NULL,
+  `usPrivilege` VARCHAR(45) NOT NULL,
+  `usPhoto` VARCHAR(450) NOT NULL,
+  `usType` VARCHAR(45) NOT NULL,
+  `usGender` VARCHAR(45) NOT NULL,
+  `usStamp` VARCHAR(150) NULL DEFAULT NULL,
+  PRIMARY KEY (`usCode`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`logs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`logs` (
+  `idlog` INT(11) NOT NULL AUTO_INCREMENT,
+  `loName` VARCHAR(535) NOT NULL,
+  `loDate` DATE NOT NULL,
+  `loStartTime` VARCHAR(45) NOT NULL,
+  `loFinalTime` VARCHAR(45) NOT NULL,
+  `loType` VARCHAR(45) NOT NULL,
+  `loYear` YEAR(4) NOT NULL,
+  `usCode` VARCHAR(70) NOT NULL,
+  PRIMARY KEY (`idlog`),
+  INDEX `fk_logs_users1_idx` (`usCode` ASC) ,
+  CONSTRAINT `fk_logs_users1`
+    FOREIGN KEY (`usCode`)
+    REFERENCES `mydbiren`.`users` (`usCode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8;
+
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`departments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`departments` (
+  `idDepartments` INT(5) NOT NULL DEFAULT '0',
+  `depaName` VARCHAR(50) NOT NULL,
+  PRIMARY KEY (`idDepartments`))
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`provinces`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`provinces` (
+  `idProvince` INT(5) NOT NULL DEFAULT '0',
+  `proName` VARCHAR(50) NOT NULL,
+  `idDepartments` INT(5) NOT NULL,
+  PRIMARY KEY (`idProvince`),
+  INDEX `fk_provinces_departments1_idx` (`idDepartments` ASC) ,
+  CONSTRAINT `fk_provinces_departments1`
+    FOREIGN KEY (`idDepartments`)
+    REFERENCES `mydbiren`.`departments` (`idDepartments`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`districts`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`districts` (
+  `idDistric` INT(5) NOT NULL DEFAULT '0',
+  `disName` VARCHAR(50) NOT NULL,
+  `idProvince` INT(5) NOT NULL,
+  PRIMARY KEY (`idDistric`),
+  INDEX `fk_districts_provinces1_idx` (`idProvince` ASC) ,
+  CONSTRAINT `fk_districts_provinces1`
+    FOREIGN KEY (`idProvince`)
+    REFERENCES `mydbiren`.`provinces` (`idProvince`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`patients`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`patients` (
+  `paCode` VARCHAR(70) NOT NULL,
+  `paDNI` INT(8) NOT NULL,
+  `paName` VARCHAR(45) NOT NULL,
+  `paLasName` VARCHAR(45) NOT NULL,
+  `paAdress` VARCHAR(45) NOT NULL,
+  `paSisYesNo` VARCHAR(45) NOT NULL,
+  `paPhone` VARCHAR(11) NOT NULL,
+  `paBirthdate` DATE NOT NULL,
+  `paAge` INT(11) NOT NULL,
+  `paObservation` VARCHAR(45) NULL DEFAULT NULL,
+  `idDistric` INT(5) NOT NULL,
+  PRIMARY KEY (`paCode`),
+  INDEX `fk_patients_districts1_idx` (`idDistric` ASC) ,
+  CONSTRAINT `fk_patients_districts1`
+    FOREIGN KEY (`idDistric`)
+    REFERENCES `mydbiren`.`districts` (`idDistric`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`networks`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`networks` (
+  `idNetwork` INT(11) NOT NULL AUTO_INCREMENT,
+  `netName` VARCHAR(145) NOT NULL,
+  `netObservation` VARCHAR(45) NULL DEFAULT NULL,
+  `netState` VARCHAR(45) NOT NULL,
+  PRIMARY KEY (`idNetwork`))
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`micronetworks`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`micronetworks` (
+  `idMicronetwork` INT(11) NOT NULL AUTO_INCREMENT,
+  `micName` VARCHAR(145) NOT NULL,
+  `micObservaion` VARCHAR(45) NULL DEFAULT NULL,
+  `micState` TEXT NOT NULL,
+  `idNetwork` INT(11) NOT NULL,
+  PRIMARY KEY (`idMicronetwork`),
+  INDEX `fk_micronetworks_networks1_idx` (`idNetwork` ASC) ,
+  CONSTRAINT `fk_micronetworks_networks1`
+    FOREIGN KEY (`idNetwork`)
+    REFERENCES `mydbiren`.`networks` (`idNetwork`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`establishments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`establishments` (
+  `idEstablishment` INT(11) NOT NULL AUTO_INCREMENT,
+  `esName` VARCHAR(45) NOT NULL,
+  `esObservation` VARCHAR(45) NULL DEFAULT NULL,
+  `esState` TEXT NOT NULL,
+  `idMicronetwork` INT(11) NOT NULL,
+  PRIMARY KEY (`idEstablishment`),
+  INDEX `fk_establishments_micronetworks1_idx` (`idMicronetwork` ASC) ,
+  CONSTRAINT `fk_establishments_micronetworks1`
+    FOREIGN KEY (`idMicronetwork`)
+    REFERENCES `mydbiren`.`micronetworks` (`idMicronetwork`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`employees`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`employees` (
+  `idEmployee` INT(11) NOT NULL AUTO_INCREMENT,
+  `emName` VARCHAR(45) NOT NULL,
+  `emLastName` VARCHAR(45) NOT NULL,
+  `emDNI` INT(8) NOT NULL,
+  `emObservation` VARCHAR(45) NULL DEFAULT NULL,
+  `emProfession` VARCHAR(45) NULL DEFAULT NULL,
+  `emLicense` VARCHAR(45) NULL DEFAULT NULL,
+  `usCode` VARCHAR(70) NOT NULL,
+  `idEstablishment` INT(11) NOT NULL,
+  PRIMARY KEY (`idEmployee`),
+  INDEX `fk_employees_users1_idx` (`usCode` ASC) ,
+  INDEX `fk_employees_establishments1_idx` (`idEstablishment` ASC) ,
+  CONSTRAINT `fk_employees_users1`
+    FOREIGN KEY (`usCode`)
+    REFERENCES `mydbiren`.`users` (`usCode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_employees_establishments1`
+    FOREIGN KEY (`idEstablishment`)
+    REFERENCES `mydbiren`.`establishments` (`idEstablishment`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`gynecologicalhistorys`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`gynecologicalhistorys` (
+  `idGynecologicalHistory` INT(11) NOT NULL AUTO_INCREMENT,
+  `hgCodeLamina` VARCHAR(145) NOT NULL,
+  `hgDateSample` DATE NOT NULL,
+  `hgDateMestruation` DATE NULL DEFAULT NULL,
+  `hgExaminationNormalAb` TEXT NOT NULL,
+  `hgSpecifyExamination` VARCHAR(45) NULL DEFAULT NULL,
+  `hgColposcopyYesNo` TEXT NULL DEFAULT NULL,
+  `hgSpecifyColposcopy` VARCHAR(45) NULL DEFAULT NULL,
+  `hgPapPrevius` VARCHAR(45) NULL DEFAULT NULL,
+  `hgDatePapPrevius` DATE NULL DEFAULT NULL,
+  `hgStarSexualRelacion` INT NULL DEFAULT NULL,
+  `hgPartnersSexual` TINYTEXT NULL,
+  `hgDateEndRelacion` DATE NULL DEFAULT NULL,
+  `hgPregnant` TEXT NULL DEFAULT NULL,
+  `hgContraceptive` TEXT NOT NULL,
+  `hgTypeContraceptive` VARCHAR(45) NULL DEFAULT NULL,
+  `hgPregnantAge` INT(11) NULL DEFAULT NULL,
+  `hgUsedMaterial` VARCHAR(45) NULL DEFAULT NULL,
+  `hgUsedFixative` VARCHAR(45) NULL DEFAULT NULL,
+  `hgNumberPregnant` TINYINT(2) NULL DEFAULT NULL,
+  `hgNumberAbortions` TINYINT(4) NULL DEFAULT NULL,
+  `hgIva` VARCHAR(50) NOT NULL,
+  `hgRecepcionYesNo` VARCHAR(45) NOT NULL,
+  `hgStateRemove` TEXT NOT NULL,
+  `hgStateSample` TEXT NOT NULL,
+  `paCode` VARCHAR(70) NOT NULL,
+  `idEmployee` INT(11) NOT NULL,
+  PRIMARY KEY (`idGynecologicalHistory`),
+  INDEX `fk_gynecologicalhistorys_patients1_idx` (`paCode` ASC) ,
+  INDEX `fk_gynecologicalhistorys_employees1_idx` (`idEmployee` ASC) ,
+  CONSTRAINT `fk_gynecologicalhistorys_patients1`
+    FOREIGN KEY (`paCode`)
+    REFERENCES `mydbiren`.`patients` (`paCode`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_gynecologicalhistorys_employees1`
+    FOREIGN KEY (`idEmployee`)
+    REFERENCES `mydbiren`.`employees` (`idEmployee`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8;
+
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`gynecologicalcuadrants`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`gynecologicalcuadrants` (
+  `idGynecologicalCuadrants` INT(11) NOT NULL AUTO_INCREMENT,
+  `cgyName` VARCHAR(45) NOT NULL,
+  `cgyObservation` VARCHAR(45) NULL DEFAULT NULL,
+  `idGynecologicalHistory` INT(11) NOT NULL,
+  PRIMARY KEY (`idGynecologicalCuadrants`),
+  INDEX `fk_gynecologicalcuadrants_gynecologicalhistorys1_idx` (`idGynecologicalHistory` ASC) ,
+  CONSTRAINT `fk_gynecologicalcuadrants_gynecologicalhistorys1`
+    FOREIGN KEY (`idGynecologicalHistory`)
+    REFERENCES `mydbiren`.`gynecologicalhistorys` (`idGynecologicalHistory`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8;
+
+-- -----------------------------------------------------
+-- Table `mydbiren`.`receptionsamples`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `mydbiren`.`receptionsamples` (
+  `idReceptionSample` INT(11) NOT NULL AUTO_INCREMENT,
+  `srDateReception` DATE NOT NULL,
+  `srStateReception` TEXT NOT NULL,
+  `srObservationReception` VARCHAR(45) NULL DEFAULT NULL,
+  `srStateResult` TEXT NOT NULL,
+  `srLecturaYesNo` VARCHAR(45) NOT NULL,
+  `srResultFinalYesNo` VARCHAR(45) NOT NULL,
+  `idgynecologicalhistory` INT(11) NOT NULL,
+  `idEmployee` INT(11) NOT NULL,
+  PRIMARY KEY (`idReceptionSample`),
+  INDEX `fk_receptionsamples_gynecologicalhistorys1_idx` (`idgynecologicalhistory` ASC) ,
+  INDEX `fk_receptionsamples_employees1_idx` (`idEmployee` ASC) ,
+  CONSTRAINT `fk_receptionsamples_gynecologicalhistorys1`
+    FOREIGN KEY (`idgynecologicalhistory`)
+    REFERENCES `mydbiren`.`gynecologicalhistorys` (`idGynecologicalHistory`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_receptionsamples_employees1`
+    FOREIGN KEY (`idEmployee`)
+    REFERENCES `mydbiren`.`employees` (`idEmployee`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB
+AUTO_INCREMENT = 1
+DEFAULT CHARACTER SET = utf8;
+
+
+DELIMITER ;
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;

@@ -1,0 +1,337 @@
+-- MySQL Workbench Forward Engineering
+
+SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
+SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
+SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+
+-- -----------------------------------------------------
+-- Schema fefacilc_sysfuas
+-- -----------------------------------------------------
+
+-- -----------------------------------------------------
+-- Schema fefacilc_sysfuas
+-- -----------------------------------------------------
+CREATE SCHEMA IF NOT EXISTS `fefacilc_sysfuas` DEFAULT CHARACTER SET utf8 ;
+USE `fefacilc_sysfuas` ;
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`entitys`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`entitys` (
+  `identity` INT NOT NULL AUTO_INCREMENT,
+  `entityName` VARCHAR(45) NOT NULL,
+  `entityCode` VARCHAR(45) NOT NULL,
+  `entitynrofua1` VARCHAR(45) NULL,
+  `entitynrofua2` VARCHAR(45) NULL,
+  `entityObs` VARCHAR(45) NULL,
+  PRIMARY KEY (`identity`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`attentions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`attentions` (
+  `idattentions` INT NOT NULL AUTO_INCREMENT,
+  `attentionName` VARCHAR(45) NOT NULL,
+  `attentionObs` VARCHAR(45) NULL,
+  PRIMARY KEY (`idattentions`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`provisions`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`provisions` (
+  `idtprovision` INT NOT NULL AUTO_INCREMENT,
+  `provisionName` VARCHAR(45) NOT NULL,
+  `provisionObs` VARCHAR(45) NULL,
+  PRIMARY KEY (`idtprovision`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`platforms`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`platforms` (
+  `idplatform` INT NOT NULL AUTO_INCREMENT,
+  `plataformName` VARCHAR(45) NOT NULL,
+  `plataformObs` VARCHAR(45) NULL,
+  PRIMARY KEY (`idplatform`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`departments`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`departments` (
+  `iddepartments` INT NOT NULL AUTO_INCREMENT,
+  `depaName` VARCHAR(45) NULL,
+  PRIMARY KEY (`iddepartments`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`provinces`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`provinces` (
+  `idprovinces` INT NOT NULL AUTO_INCREMENT,
+  `proName` VARCHAR(45) NULL,
+  `iddepartments` INT NOT NULL,
+  PRIMARY KEY (`idprovinces`),
+  INDEX `fk_provinces_departments1_idx` (`iddepartments` ASC),
+  CONSTRAINT `fk_provinces_departments1`
+    FOREIGN KEY (`iddepartments`)
+    REFERENCES `fefacilc_sysfuas`.`departments` (`iddepartments`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`distritcs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`distritcs` (
+  `iddistric` INT NOT NULL AUTO_INCREMENT,
+  `disName` VARCHAR(45) NOT NULL,
+  `idprovinces` INT NOT NULL,
+  PRIMARY KEY (`iddistric`),
+  INDEX `fk_distritcs_provinces1_idx` (`idprovinces` ASC),
+  CONSTRAINT `fk_distritcs_provinces1`
+    FOREIGN KEY (`idprovinces`)
+    REFERENCES `fefacilc_sysfuas`.`provinces` (`idprovinces`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`ipresses`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`ipresses` (
+  `idipress` INT NOT NULL AUTO_INCREMENT,
+  `ipressName` VARCHAR(45) NOT NULL,
+  `ipressCode` VARCHAR(45) NOT NULL,
+  `ipressActive` VARCHAR(45) NULL,
+  `ipressCategory` VARCHAR(45) NULL,
+  `ipressObs` VARCHAR(45) NULL,
+  `iddistric` INT NOT NULL,
+  PRIMARY KEY (`idipress`),
+  INDEX `fk_ipresses_distritcs1_idx` (`iddistric` ASC),
+  CONSTRAINT `fk_ipresses_distritcs1`
+    FOREIGN KEY (`iddistric`)
+    REFERENCES `fefacilc_sysfuas`.`distritcs` (`iddistric`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`users`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`users` (
+  `iduser` VARCHAR(70) NOT NULL,
+  `usNickname` VARCHAR(45) NOT NULL,
+  `usPassword` VARCHAR(45) NOT NULL,
+  `usState` VARCHAR(45) NOT NULL,
+  `usPrivilege` VARCHAR(45) NOT NULL,
+  `usPhoto` VARCHAR(45) NULL,
+  `usType` VARCHAR(45) NULL,
+  `usGender` VARCHAR(45) NULL,
+  `usStamp` VARCHAR(45) NULL,
+  PRIMARY KEY (`iduser`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`employees`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`employees` (
+  `idemployee` INT NOT NULL AUTO_INCREMENT,
+  `emName` VARCHAR(45) NOT NULL,
+  `emLastName` VARCHAR(45) NOT NULL,
+  `emDNI` VARCHAR(45) NOT NULL,
+  `emObservation` VARCHAR(45) NULL,
+  `emProfession` VARCHAR(45) NULL,
+  `emOffice` VARCHAR(45) NULL,
+  `iduser` VARCHAR(70) NOT NULL,
+  PRIMARY KEY (`idemployee`),
+  INDEX `fk_employees_users1_idx` (`iduser` ASC),
+  CONSTRAINT `fk_employees_users1`
+    FOREIGN KEY (`iduser`)
+    REFERENCES `fefacilc_sysfuas`.`users` (`iduser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`doctors`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`doctors` (
+  `iddoctor` INT NOT NULL AUTO_INCREMENT,
+  `doctorDNI` VARCHAR(45) NOT NULL,
+  `doctorName` VARCHAR(45) NOT NULL,
+  `doctorLastName` VARCHAR(45) NOT NULL,
+  `doctorColegiatura` VARCHAR(45) NOT NULL,
+  `doctorRNE` VARCHAR(45) NULL,
+  `doctorResponsable` VARCHAR(45) NULL,
+  `doctorEspecialty` VARCHAR(45) NULL,
+  `doctorGraduate` VARCHAR(45) NULL,
+  `doctorObs` VARCHAR(45) NULL,
+  PRIMARY KEY (`iddoctor`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`patients`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`patients` (
+  `idpatient` INT NOT NULL AUTO_INCREMENT,
+  `patientName` VARCHAR(45) NOT NULL,
+  `patientNameOther` VARCHAR(45) NULL,
+  `patientLastName` VARCHAR(45) NOT NULL,
+  `patientSecondSurname` VARCHAR(45) NULL,
+  `patientDocument` VARCHAR(45) NOT NULL,
+  `patientTypeDocument` VARCHAR(45) NOT NULL,
+  `patientDiresa` VARCHAR(45) NULL,
+  `patientNroSIS` VARCHAR(45) NOT NULL,
+  `patientGender` VARCHAR(45) NOT NULL,
+  `patientDateBirth` DATE NOT NULL,
+  `patientDateDeath` DATE NULL,
+  `patientDateBorn` DATE NULL,
+  `patientHistoryClini` VARCHAR(45) NOT NULL,
+  `patientEtnia` VARCHAR(45) NOT NULL,
+  `patientMembership1` VARCHAR(45) NULL,
+  `patientMembership2` VARCHAR(45) NULL,
+  `patientMembership3` VARCHAR(45) NULL,
+  `patientIAFAS` VARCHAR(45) NULL,
+  `patientIAFASseguro` VARCHAR(45) NULL,
+  `patientObs` VARCHAR(45) NULL,
+  PRIMARY KEY (`idpatient`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`fuas`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`fuas` (
+  `idfua` INT NOT NULL AUTO_INCREMENT,
+  `fuaNrouno` VARCHAR(45) NULL,
+  `fuaNrodos` VARCHAR(45) NULL,
+  `fuaNro` VARCHAR(45) NOT NULL,
+  `fuaSheetReferene` VARCHAR(45) NOT NULL,
+  `fuaDateAttentios` DATETIME NOT NULL,
+  `fuaTime` TIME NULL,
+  `fuaUPS` VARCHAR(45) NULL,
+  `fuaCodPresta` VARCHAR(45) NULL,
+  `fuaCodPrestaAdditional` VARCHAR(45) NULL,
+  `fuaDateHospitalization` DATE NULL,
+  `fuaDateHospExit` DATE NULL,
+  `fuaDateHospCurt` DATE NULL,
+  `fuaObs` VARCHAR(95) NULL,
+  `identity` INT NOT NULL,
+  `idattentions` INT NOT NULL,
+  `idtprovision` INT NOT NULL,
+  `idplatform` INT NOT NULL,
+  `idipress` INT NOT NULL,
+  `idemployee` INT NOT NULL,
+  `iddoctor` INT NOT NULL,
+  `idpatient` INT NOT NULL,
+  PRIMARY KEY (`idfua`),
+  INDEX `fk_fuas_entitys_idx` (`identity` ASC),
+  INDEX `fk_fuas_attentions1_idx` (`idattentions` ASC),
+  INDEX `fk_fuas_provisions1_idx` (`idtprovision` ASC),
+  INDEX `fk_fuas_platforms1_idx` (`idplatform` ASC),
+  INDEX `fk_fuas_ipresses1_idx` (`idipress` ASC),
+  INDEX `fk_fuas_employees1_idx` (`idemployee` ASC),
+  INDEX `fk_fuas_doctors1_idx` (`iddoctor` ASC),
+  INDEX `fk_fuas_patients1_idx` (`idpatient` ASC),
+  CONSTRAINT `fk_fuas_entitys`
+    FOREIGN KEY (`identity`)
+    REFERENCES `fefacilc_sysfuas`.`entitys` (`identity`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_fuas_attentions1`
+    FOREIGN KEY (`idattentions`)
+    REFERENCES `fefacilc_sysfuas`.`attentions` (`idattentions`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_fuas_provisions1`
+    FOREIGN KEY (`idtprovision`)
+    REFERENCES `fefacilc_sysfuas`.`provisions` (`idtprovision`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_fuas_platforms1`
+    FOREIGN KEY (`idplatform`)
+    REFERENCES `fefacilc_sysfuas`.`platforms` (`idplatform`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_fuas_ipresses1`
+    FOREIGN KEY (`idipress`)
+    REFERENCES `fefacilc_sysfuas`.`ipresses` (`idipress`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_fuas_employees1`
+    FOREIGN KEY (`idemployee`)
+    REFERENCES `fefacilc_sysfuas`.`employees` (`idemployee`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_fuas_doctors1`
+    FOREIGN KEY (`iddoctor`)
+    REFERENCES `fefacilc_sysfuas`.`doctors` (`iddoctor`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_fuas_patients1`
+    FOREIGN KEY (`idpatient`)
+    REFERENCES `fefacilc_sysfuas`.`patients` (`idpatient`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`patienhistorys`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`patienhistorys` (
+  `idpatienhistory` INT NOT NULL AUTO_INCREMENT,
+  `historydate` DATE NULL,
+  `historyweight` VARCHAR(45) NULL,
+  `historyheight` VARCHAR(45) NULL,
+  `historyPA` VARCHAR(45) NULL,
+  `idpatient` INT NOT NULL,
+  PRIMARY KEY (`idpatienhistory`),
+  INDEX `fk_patienhistorys_patients1_idx` (`idpatient` ASC),
+  CONSTRAINT `fk_patienhistorys_patients1`
+    FOREIGN KEY (`idpatient`)
+    REFERENCES `fefacilc_sysfuas`.`patients` (`idpatient`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
+-- Table `fefacilc_sysfuas`.`logs`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `fefacilc_sysfuas`.`logs` (
+  `idlog` INT NOT NULL AUTO_INCREMENT,
+  `loName` VARCHAR(45) NULL,
+  `loDate` VARCHAR(45) NULL,
+  `loStartTime` VARCHAR(45) NULL,
+  `loFinalTime` VARCHAR(45) NULL,
+  `loType` VARCHAR(45) NULL,
+  `loyear` YEAR(4) NULL,
+  `iduser` VARCHAR(70) NOT NULL,
+  PRIMARY KEY (`idlog`),
+  INDEX `fk_logs_users1_idx` (`iduser` ASC),
+  CONSTRAINT `fk_logs_users1`
+    FOREIGN KEY (`iduser`)
+    REFERENCES `fefacilc_sysfuas`.`users` (`iduser`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION)
+ENGINE = InnoDB;
+
+
+SET SQL_MODE=@OLD_SQL_MODE;
+SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
+SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
